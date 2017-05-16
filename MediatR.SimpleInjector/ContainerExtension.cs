@@ -8,7 +8,7 @@ namespace MediatR.SimpleInjector
     {
         public static Container BuildMediator(this Container container, params Assembly[] assemblies)
         {
-            return BuildMediator(container, assemblies);
+            return BuildMediator(container, (IEnumerable<Assembly>)assemblies);
         }
 
         public static Container BuildMediator(this Container container, IEnumerable<Assembly> assemblies)
