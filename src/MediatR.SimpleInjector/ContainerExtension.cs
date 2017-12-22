@@ -21,8 +21,6 @@
             container.Register(typeof(IRequestHandler<>), allAssemblies);
             container.RegisterCollection(typeof(INotificationHandler<>), allAssemblies);
 
-            container.RegisterCollection(typeof(IPipelineBehavior<,>), allAssemblies);
-
             container.RegisterSingleton(new SingleInstanceFactory(container.GetInstance));
             container.RegisterSingleton(new MultiInstanceFactory(container.GetAllInstances));
 
