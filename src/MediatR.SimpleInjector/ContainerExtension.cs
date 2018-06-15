@@ -18,11 +18,10 @@
 
             container.RegisterSingleton<IMediator, Mediator>();
             container.Register(typeof(IRequestHandler<,>), allAssemblies);
-            container.Register(typeof(IRequestHandler<>), allAssemblies);
-            container.RegisterCollection(typeof(INotificationHandler<>), allAssemblies);
 
-            container.RegisterSingleton(new SingleInstanceFactory(container.GetInstance));
-            container.RegisterSingleton(new MultiInstanceFactory(container.GetAllInstances));
+            container.Collection.Register(typeof(INotificationHandler<>), allAssemblies);
+
+            container.RegisterInstance(new ServiceFactory(container.GetInstance));
 
             return container;
         }
