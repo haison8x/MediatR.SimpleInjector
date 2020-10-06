@@ -2,19 +2,23 @@
 using System.Threading.Tasks;
 using MediatR.Pipeline;
 
-namespace MediatR.SimpleInjector {
+namespace MediatR.SimpleInjector
+{
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using System;
     using global::SimpleInjector;
 
-    public static class ContainerExtension {
-        public static Container BuildMediator (this Container container, params Assembly[] assemblies) {
-            return BuildMediator (container, (IEnumerable<Assembly>) assemblies);
+    public static class ContainerExtension
+    {
+        public static Container BuildMediator(this Container container, params Assembly[] assemblies)
+        {
+            return BuildMediator(container, (IEnumerable<Assembly>)assemblies);
         }
 
-        public static Container BuildMediator (this Container container, IEnumerable<Assembly> assemblies) {
+        public static Container BuildMediator(this Container container, IEnumerable<Assembly> assemblies)
+        {
             var allAssemblies = GetAssemblies(assemblies);
 
             container.RegisterSingleton<IMediator, Mediator>();
@@ -25,13 +29,17 @@ namespace MediatR.SimpleInjector {
             RegisterHandlers(container, typeof(IRequestExceptionHandler<,,>), allAssemblies);
 
             //Pipeline
-            container.Collection.Register(typeof(IPipelineBehavior<,>), new []
+            container.Collection.Register(typeof(IPipelineBehavior<,>), new[]
             {
                 typeof(RequestExceptionProcessorBehavior<,>),
                 typeof(RequestExceptionActionProcessorBehavior<,>),
                 typeof(RequestPreProcessorBehavior<,>),
-                typeof(RequestPostProcessorBehavior<,>)
+                typeof(RequestPostProcessorBehavior<,>),
+                 typeof(EmptyPipelineBehavior<,>)
             });
+
+            container.Collection.Register(typeof(IRequestPreProcessor<>), new[] { typeof(EmptyRequestPreProcessor<>) });
+            container.Collection.Register(typeof(IRequestPostProcessor<,>), new[] { typeof(EmptyRequestPostProcessor<,>) });
 
             container.Register(() => new ServiceFactory(container.GetInstance), Lifestyle.Singleton);
 
@@ -52,10 +60,10 @@ namespace MediatR.SimpleInjector {
 
         private static Assembly[] GetAssemblies(IEnumerable<Assembly> assemblies)
         {
-            var allAssemblies = new List<Assembly> { typeof (IMediator).GetTypeInfo ().Assembly };
-            allAssemblies.AddRange (assemblies);
-            
-            return allAssemblies.ToArray();            
+            var allAssemblies = new List<Assembly> { typeof(IMediator).GetTypeInfo().Assembly };
+            allAssemblies.AddRange(assemblies);
+
+            return allAssemblies.ToArray();
         }
 
     }
